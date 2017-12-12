@@ -3,6 +3,7 @@ package com.zerualem.criminalintent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -25,6 +26,8 @@ public class CrimeFragment extends Fragment {
     private Button mCrimeDate;
     private CheckBox mSolvedCheckBox;
     public static final String ARG_CRIME_ID="crime_id";
+    private static final String DIALOG_DATE ="DialogDate";
+    private static final int REQUEST_CODE=0;
 
     public static CrimeFragment newInstance(UUID crimeId){
         Bundle args=new Bundle();
@@ -33,7 +36,6 @@ public class CrimeFragment extends Fragment {
         CrimeFragment crimeFragment=new CrimeFragment();
         crimeFragment.setArguments(args);
         return crimeFragment;
-
     }
 
     @Override
@@ -52,7 +54,6 @@ public class CrimeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_layout, container,false);
         mTitleField =v.findViewById(R.id.crime_title);
         mTitleField.setText(mCrime.getTitle());
-
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -72,7 +73,16 @@ public class CrimeFragment extends Fragment {
 
         mCrimeDate = v.findViewById(R.id.crime_date);
         mCrimeDate.setText(mCrime.getDate().toString());
-        mCrimeDate.setEnabled(false);
+        //mCrimeDate.setEnabled(false);
+        mCrimeDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager= getFragmentManager();
+                DatePickerFragment dialog=DatePickerFragment.newInstance(mCrime.getDate());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_CODE);         // to result from datepickerfragment
+                dialog.show(manager,DIALOG_DATE);
+            }
+        });
 
         mSolvedCheckBox = v.findViewById(R.id.crime_solved);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
